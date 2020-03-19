@@ -29,7 +29,7 @@ class Graph:
         Get all neighbors (edges) of a vertex.
         """
         if vertex_id in self.vertices:
-            return self.vertices
+            return self.vertices[vertex_id]
 
     def bft(self, starting_vertex):
         """
@@ -81,8 +81,9 @@ class Graph:
                  print(v)
                  visited.add(v)
                  # push all of it's nieghbors
-                 print(self.get_neighbors(v))
-                 for neighbor in self.get_neighbors(v):
+                 neighbors = self.get_neighbors(v)
+                 print(neighbors)
+                 for neighbor in neighbors:
                      s.push(neighbor)
 
     def dft_recursive(self, starting_vertex, visited=None): # "default arg = None"
@@ -179,7 +180,7 @@ class Graph:
         
 
 
-    def dfs_recursive(self, starting_vertex):
+    def dfs_recursive(self, starting_vertex, visited=None):
         """
         Return a list containing a path from
         starting_vertex to destination_vertex in
@@ -187,9 +188,21 @@ class Graph:
 
         This should be done using recursion.
         """
-        # print the path from the beginning
+        # set up visited but ONLY if one wasn't given (first pass)
+        if visited is None:
+            visited = set()
+        # check to see if starting vertex is visited
+        if starting_vertex not in visited:
+            # if not visited, add to visited
+            visited.add(starting_vertex)
+            
+
+
+        
+
+
         print(path)
-        # check if this is the first time such that visited = None
+        
         if visited is None:
             visited = set() #??
         if path is None:
@@ -264,8 +277,8 @@ if __name__ == '__main__':
         1, 2, 4, 7, 6, 3, 5
         1, 2, 4, 6, 3, 5, 7
     '''
-    # graph.dft(1)
-    graph.dft_recursive(1)
+    graph.dft(1)
+    # graph.dft_recursive(1)
 
     '''
     Valid BFS path:
