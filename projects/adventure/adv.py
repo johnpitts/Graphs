@@ -32,12 +32,17 @@ player = Player(world.starting_room)
 # traversal_path = ['n', 'n']
 
 # Get player's current room
-start_room = player.current_room
-print(start_room)
-
-
 
 traversal_path = []
+
+start_room = player.current_room
+exits = start_room.get_exits(); print(exits)
+if len(exits) == 1:
+    print("condition met")
+    traversal_path.append(exits[0])
+    player.travel(exits[0])
+    print(player.current_room)
+    print(traversal_path)
 
 
 
