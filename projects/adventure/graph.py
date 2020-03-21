@@ -1,4 +1,6 @@
 from util import Stack, Queue
+from room import Room
+from player import Player
 
 class Graph:
 
@@ -11,12 +13,18 @@ class Graph:
         oppo = 'no direction'
         if last_direction is not None:  
             oppo = get_opposite_direction_from(last_direction)
+        
+        if room_id not in self.rooms:
+            self.rooms[room_id] = {}
         for each_exit in exits:
             # eliminates adding '?' to the direction from which player just left!
+
             if each_exit is not oppo:
                 self.rooms[room_id][each_exit] = '?'
             else:
                 self.rooms[room_id][oppo] = previous_room_id
+
+            # 0: {'n' }
                 
     def get_opposite_direction_from(self, this_direction):
         if this_direction == 'n':
@@ -40,33 +48,9 @@ class Graph:
         else:
             print("ERROR: you're code didn't work bc there's no nieghoring rooms dict for this room_id")
 
-    # not sure will need this yet, so not messing with it until i do need it
-    def breadth_traverse_to_untried_door_room(self, starting_room, path):
-        """
-        traverse to the room with a ? for a door which you found using breadth
-        first traversal method, using the given path
-        """
-
-        # step 1: create a queue
-        q = Queue()
-        # step 2: enqueue the starting vertex
-        q.enqueue(starting_room)
-        # while queue is not empty...
-        while q.size() > 0:
-             # dequeue the 1st vertex
-             v = q.dequeue()
-             #  check if it''s been visited
-             if v not in visited:
-             #  if it hasn't been visitied...
-                 # mark it as visited
-                 print(v)
-                 self.add_room(v)
-                 #  enqueue all of it's nieghbors
-                 for neighbor in self.add_doors(v):
-                     q.enqueue(neighbor)
 
 
-    def dft(self, starting_room_id):
+    def depth_first_traverse_from(self, starting_room_id, graph):
         """
         move to a graph exit in depth-first order
         beginning from starting_room.
@@ -78,20 +62,25 @@ class Graph:
         # our graph (player map) will store visited rooms and all info associated
         # while stack is not empty...
         while s.size() > 0:
+             # 
+
              # pop the 1st vertex
              room = s.pop()
              #  check if it''s been visited
-             if room not in graph:
+             if room not in self.rooms:
              #  if it hasn't been visitied...
                  # mark it as visited
                  print(room)
                  self.add_room(room)
-                 # push all of the exits
+
+
+
+                 # get the new exits
                  exits = self.room.get_exits()
                  print(exits)
-                 
-                 for exit in exits:
-                     s.push(neighbor)
+                 # randomly pick a door
+                 picked_door = random(exits)
+                 s.push(picked_door)
 
 
     def bfs(self, starting_vertex, destination_vertex):
@@ -128,6 +117,32 @@ class Graph:
                      new_path = path.append(neighbor)
                      # enque the copy
                      q.enqueue(new_path)
+
+
+    # not sure will need this yet, so not messing with it until i do need it
+    def breadth_traverse_to_untried_door_room(self, starting_room, path):
+        """
+        traverse to the room with a ? for a door which you found using breadth
+        first traversal method, using the given path
+        """
+
+        # step 1: create a queue
+        q = Queue()
+        # step 2: enqueue the starting vertex
+        q.enqueue(starting_room)
+        # while queue is not empty...
+        while q.size() > 0:
+             # dequeue the 1st vertex
+             v = q.dequeue()
+             #  check if it''s been visited
+             if v not in visited:
+             #  if it hasn't been visitied...
+                 # mark it as visited
+                 print(v)
+                 self.add_room(v)
+                 #  enqueue all of it's nieghbors
+                 for neighbor in self.add_doors(v):
+                     q.enqueue(neighbor)
 
 
          
