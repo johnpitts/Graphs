@@ -51,17 +51,14 @@ def get_opposite_direction_from(this_direction):
 
 def graph_the_exits(room, previous_room=None, last_direction=None):
     exits = room.get_exits()
-    if previous_room == None:
-        for exit in exits:
+    for exit in exits:
+        oppo = get_opposite_direction_from(last_direction)
+        if exit is not oppo:
             unexplored_exits[exit] = '?'
-        graph[room.id] = unexplored_exits
-    else:
-        for exit in exits:
-            if exit is not last_direction:
-                unexplored_exits[exit] = '?'
-            # else:
-            #     unexplored_exits[exit] = previous_room.id
-        graph[room.id] = unexplored_exits
+        else: # the exit is the door player used to enter room...
+            unexplored_exits[exits] = previous_room.id
+    graph[room.id] = unexplored_exits
+
 
 
 
@@ -86,14 +83,21 @@ def depth_first_traverse_from(starting_room):
 
              # find a door with a '?' if one exists, else return the path
              exits = room.get_exits()
-             print(exits)
+             print(len(exits))
+
+             # conduct a test to see if any exits are = '?'
+
+
+
+
              if len(exits) > 1:
                  print("THREE")
                  for key, value in graph[room.id].items():
                      if '?' == value:
                          direction = key
              else:
-                return path
+                 print("returning path")
+                 return path
              player.travel(direction)
              path.append(direction)
              print(path)
