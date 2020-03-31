@@ -1,10 +1,11 @@
+import sys
 from room import Room
 from player import Player
 from world import World
 # from projects import graph
 # from graph import util
 from util import Stack, Queue
-from graph import Graph
+# from graph import Graph
 
 import random
 from ast import literal_eval
@@ -38,7 +39,7 @@ start_room = player.current_room
 # initialize the starting room's exit dictionary with ?s
 
 
-def get_opposite_direction_from(this_direction):
+def opposite_direction_from(this_direction):
     if this_direction == 'n':
         return 's'
     if this_direction == 's':
@@ -52,62 +53,75 @@ def get_opposite_direction_from(this_direction):
 def graph_the_exits(room, previous_room=None, last_direction=None):
     exits = room.get_exits()
     for exit in exits:
-        oppo = get_opposite_direction_from(last_direction)
-        if exit is not oppo:
+        if exit is not last_direction and exit is not 'n' or 's' or 'e' or 'w':
             unexplored_exits[exit] = '?'
         else: # the exit is the door player used to enter room...
-            unexplored_exits[exits] = previous_room.id
+            unexplored_exits[exit] = previous_room
     graph[room.id] = unexplored_exits
 
-
-
+# determines if the room is the final room with nowhere else to go
+def the_last_room(room, last_direction=None):
+    if last_direction is None: # you're in the starting room
+        return False
+    exits = room.get_exits()
+    for exit in exits:
+        # exclude the entry-door
+        if exit is not opposite_direction_from(last_direction):
+            # if any door = ? then you're NOT in the last room
+            if exit is not '?':
+                return False
+    # if you avoid line 71, then you're in the last room
+    return False
 
 def depth_first_traverse_from(starting_room):
     # step 1: create a stack
         s = Stack()
+        
+        counter = 0
+
         # step 2: push the starting room
         s.push(starting_room)
         # step 3: create a path to track moves to send back via RETURN
         path = []
         room = starting_room
         # initialize the unexplored_exits of the starting room if first_time
-        graph_the_exits(starting_room)
+        # graph_the_exits(starting_room)
         # Now go thru with graph
-        oppo = None
+        direction = "dead end"
+        doorway = None
         while s.size() > 0:
-             # enter all the exits into the graph with a '?'
+            # get the room the player was in previously so it's door can be properly attributed in the graph
              previous_room = room
-             # pop the 1st room
+             # pop the current room
              room = s.pop()
-             graph_the_exits(room, previous_room.id, oppo)
+             print(f"room: {room}")
 
-             # find a door with a '?' if one exists, else return the path
-             exits = room.get_exits()
-             print(len(exits))
+             # check if the current room is the end of the graph
+             if not the_last_room(room, doorway):
+                # Get the next direction to travel
+                for key, value in graph[room.id].items():
+                    if '?' == value:
+                        direction = key
+                if direction == "dead end":
+                    return path
+                print(f"A direction to move next is: {direction}")
 
-             # conduct a test to see if any exits are = '?'
+                # Move the player to the next room, and record the path used, note the doorway just used
+                player.travel(direction)
+                path.append(direction)
+                print(f"path: {path}")
+                doorway = get_opposite_direction_from(direction) # tested, works
 
+                # get newest room and graph the entryway door
+                next_room = player.current_room
+                graph[next_room.id][doorway] = room.id
+                print(f"print your newly updated room graph: {graph} ")
 
-
-
-             if len(exits) > 1:
-                 print("THREE")
-                 for key, value in graph[room.id].items():
-                     if '?' == value:
-                         direction = key
-             else:
-                 print("returning path")
-                 return path
-             player.travel(direction)
-             path.append(direction)
-             print(path)
-             oppo = get_opposite_direction_from(direction)
-             # get newest room
-             next_room = player.current_room()
-             # set the newly-entered room as destination for door entered in the graph
-             graph[next_room.id][oppo] = room.id
-             # push it into the stack
-             s.push(next_room)
+                # push current room into the stack
+                s.push(next_room)
+             counter += 1
+             if counter == 4:
+                 sys.exit() 
 
 
 def bfs(self, starting_room):
@@ -142,9 +156,11 @@ def bfs(self, starting_room):
 
 
 # Loop until the map we build is as long as the given groom graph
-while len(graph) < len(room_graph):
+# while len(graph) < len(room_graph):
     # travel til room has no unexplored exits
-    traversal_path = depth_first_traverse_from(start_room)
+traversal_path = depth_first_traverse_from(start_room)
+print(player.current_room)
+print(traversal_path)
     # do breadth-fs for nearest unexplored exit with graph already filled out only
 
     # Travel to unexplored exit room

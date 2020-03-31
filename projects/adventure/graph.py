@@ -9,13 +9,14 @@ class Graph:
     def __init__(self):
         self.rooms = {}
 
-    def add_room(self, room_id, previous_room_id, last_direction, exits):
-        oppo = 'no direction'
-        if last_direction is not None:  
-            oppo = get_opposite_direction_from(last_direction)
-        
-        if room_id not in self.rooms:
-            self.rooms[room_id] = {}
+    def add_room(self, room):
+        exits = self.room.get_exits()
+        id = room.id
+        self.rooms[id] = {}
+
+        if room not in self.rooms:
+            id = room.id
+
         for each_exit in exits:
             # eliminates adding '?' to the direction from which player just left!
 
@@ -26,15 +27,7 @@ class Graph:
 
             # 0: {'n' }
                 
-    def get_opposite_direction_from(self, this_direction):
-        if this_direction == 'n':
-            return 's'
-        if this_direction == 's':
-            return 'n'
-        if this_direction == 'w':
-            return 'e'
-        if this_direction == 'e':
-            return 'w'
+
         # else:
         #     print("Either you just started or Error: direction entered is not a valid direction"
         #     return None
@@ -47,6 +40,30 @@ class Graph:
             return self.rooms[room_id]
         else:
             print("ERROR: you're code didn't work bc there's no nieghoring rooms dict for this room_id")
+
+
+        def dft(self, starting_room):
+        # step 1: create a stack
+        s = Stack()
+        # step 2: push the starting vertex
+        s.push(starting_room)
+        # step 3: create a set to store visited vertices
+        visited = set()
+        # while stack is not empty...
+        while s.size() > 0:
+             # pop the 1st vertex
+             v = s.pop()
+             #  check if it''s been visited
+             if v not in visited:
+             #  if it hasn't been visitied...
+                 # mark it as visited
+                 print(v)
+                 visited.add(v)
+                 # push all of it's nieghbors
+                 neighbors = self.get_neighbors(v)
+                 print(neighbors)
+                 for neighbor in neighbors:
+                     s.push(neighbor)
 
 
 
