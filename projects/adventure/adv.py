@@ -15,8 +15,8 @@ world = World()
 
 
 # You may uncomment the smaller graphs for development and testing purposes.
-map_file = "maps/test_line.txt"
-# map_file = "maps/test_cross.txt"
+# map_file = "maps/test_line.txt"
+map_file = "maps/test_cross.txt"
 # map_file = "maps/test_loop.txt"
 # map_file = "maps/test_loop_fork.txt"
 # map_file = "maps/main_maze.txt"
@@ -50,6 +50,11 @@ def opposite_direction_from(this_direction):
 
 
 def graph_the_exits(room, previous_room=None, entryway=None):
+    # graph the entryway into the previous room
+    if previous_room is not None:
+        last_door = opposite_direction_from(entryway)
+        print(previous_room)
+        graph[previous_room.id][last_door] = room.id
     exits = room.get_exits()
     unexplored_exits = {}
     for exit in exits:
@@ -82,11 +87,7 @@ def the_last_room(room, entryway=None):
 def depth_first_traverse_from(starting_room):
     # step 1: create a stack
     s = Stack()
-    
-    counter = 0
-
     # you must graph the starting room, or else graph won't have anything in it when you look for '?' in for key, value... statement
-
     graph_the_exits(starting_room)
     print(f"brand new room graph: {graph} ")
 
@@ -121,58 +122,101 @@ def depth_first_traverse_from(starting_room):
             entryway = opposite_direction_from(direction) # tested, works
             # get newest room and graph the entryway door
             next_room = player.current_room
+            print(room)
             graph_the_exits(next_room, room, entryway)
 
             print(f"newly updated room graph: {graph} ")
 
             # push current room into the stack
             s.push(next_room)
-            counter += 1
-            if counter == 4:
-                sys.exit()
+        else:
+            print("do a breadth first search to find an empty room")
+            print("travel to that empty room")
+            print("do depth first search again")
+
     return path
 
+def theres_an_unexplored_exit_in_this(room):
+    exits = room.get_exits()
+    for exit in exits:
+        print(f"processing exit door... {exit}")
+        if graph[room.id][exit] is '?':
+            print("returned: FOUND THE ROOM!")
+            return True
+    # if you avoid line 139 then room has no unexplored exits
+    print("keep moving")
+    return False
 
-def bfs(self, starting_room):
-        # step 1: create a queue
+
+
+def bfs(starting_room):
+        # step 1: create a queue to store rooms
         q = Queue()
-        # step 2: enqueue a PATH TO the starting vertex
+        # step 2: enqueue the starting room
+        print(f"\n bfs begins {starting_room}")
         q.enqueue( [starting_room] )
-        # step 3: create a set to store visited vertices
+        # step 3: create a set to store visited rooms, or we can just use our graph
         visited = set()
         # while queue is not empty...
         while q.size() > 0:
-             # dequeue the first PATH
-             path = q.dequeue()
-             # grab the vertex from the end of the path
-             v = path[-1]
-             #  check if it''s been visited
-             if v not in visited:
+             # dequeue the first room into our path, note that q has lists
+             path = q.dequeue()            
+             # grab the most recent room
+             room = path[-1]
+             #  check if room has any '?' 
+             if room not in visited:
              #  if it hasn't been visitied...
                  # mark it as visited
-                 visited.add(v)
-                 # check if it's the target
-                 if v is destination_vertex:
+                 visited.add(room)
+                 # check if it's the room with a '?'
+                 if theres_an_unexplored_exit_in_this(room):
                      # if so return the PATH
                      return path
                  #  enqueue a PATH to all of it's nieghbors
-                 for neighbor in get_neighbors(v):
+                 for exit in room.get_exits():
                      # make a copy of the path
-                     new_path = path.append(neighbor)
+                     #  neighboring_roomID_associated_with_exit = graph[room.id][exit]
+                     adjacent_room = room.get_room_in_direction(exit)
+                     print(f"adjacent room is... {adjacent_room}")
+                     new_path = path
+
+                     new_path.append(adjacent_room)
+                     print(f"newPath: {new_path}")
                      # enque the copy
                      q.enqueue(new_path)
 
 
+def travel_back(back_path):
+    for each_door in range(len(back_path)):
+        player.travel(each_door)
+
+def reverse_path(path):
+    reversed_path = []
+    for i in range(len(path)):
+        element = path.pop()
+        oppo = opposite_direction_from(element)
+        reversed_path.append(oppo)
+
+
 
 # Loop until the map we build is as long as the given groom graph
-# while len(graph) < len(room_graph):
+#while len(graph) < len(room_graph):
     # travel til room has no unexplored exits
 traversal_path = depth_first_traverse_from(start_room)
-print(player.current_room)
+print(f"your are here! {player.current_room.id}")
 print(traversal_path)
     # do breadth-fs for nearest unexplored exit with graph already filled out only
+from_starting_room = player.current_room
+    # reversed_path = reverse_path(traversal_path)
+    # back_path = bfs(from_starting_room)
+    # traversal_path.append(back_path)
+    # travel_back(back_path)
+
+
 
     # Travel to unexplored exit room
+
+
 
 
 
