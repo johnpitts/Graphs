@@ -34,8 +34,7 @@ player = Player(world.starting_room)
 graph = {}
 traversal_path = []
 
-start_room = player.current_room
-# initialize the starting room's exit dictionary with ?s
+# FUNCTIONS (go to line...  ... for continuation of main code)
 
 
 def opposite_direction_from(this_direction):
@@ -53,7 +52,6 @@ def graph_the_exits(room, previous_room=None, entryway=None):
     # graph the entryway into the previous room
     if previous_room is not None:
         last_door = opposite_direction_from(entryway)
-        print(previous_room)
         graph[previous_room.id][last_door] = room.id
     exits = room.get_exits()
     unexplored_exits = {}
@@ -85,6 +83,9 @@ def the_last_room(room, entryway=None):
     return True
 
 def depth_first_traverse_from(starting_room):
+
+    print(starting_room)
+
     # step 1: create a stack
     s = Stack()
     # you must graph the starting room, or else graph won't have anything in it when you look for '?' in for key, value... statement
@@ -103,8 +104,6 @@ def depth_first_traverse_from(starting_room):
     while s.size() > 0:
         # pop the current room
         room = s.pop()
-        print(room); print("here at line 103")
-
         # check if the current room is the end of the graph
         if not the_last_room(room, entryway):
             # Get the next direction to travel from any door which is unknown... '?'
@@ -122,7 +121,7 @@ def depth_first_traverse_from(starting_room):
             entryway = opposite_direction_from(direction) # tested, works
             # get newest room and graph the entryway door
             next_room = player.current_room
-            print(room)
+            print(next_room)
             graph_the_exits(next_room, room, entryway)
 
             print(f"newly updated room graph: {graph} ")
@@ -153,7 +152,7 @@ def bfs(starting_room):
         # step 1: create a queue to store rooms
         q = Queue()
         # step 2: enqueue the starting room
-        print(f"\n bfs begins {starting_room}")
+        print(f"\n &&&&&&&&&&&&&&&&&&& bfs begins at room # {starting_room.id} &&&&&&&&&&&&&&&&&&&&")
         q.enqueue( [starting_room] )
         # step 3: create a set to store visited rooms, or we can just use our graph
         visited = set()
@@ -171,6 +170,7 @@ def bfs(starting_room):
                  # check if it's the room with a '?'
                  if theres_an_unexplored_exit_in_this(room):
                      # if so return the PATH
+                     print("Kicking Out of bfs")
                      return path
                  #  enqueue a PATH to all of it's nieghbors
                  for exit in room.get_exits():
@@ -187,8 +187,16 @@ def bfs(starting_room):
 
 
 def travel_back(back_path):
+
+    # check for circularity?
+
+    # check to make sure algo doesn't take you down the same path as last time, aka
+          # check to make sure that upon calling depth-1st-tr it looks for a '?' room to head
+
     for each_door in range(len(back_path)):
+        # door will be 3 then 0 for first pass back from cross's first dft
         player.travel(each_door)
+        print(f"hello new room! {player.current_room.id}")
 
 def reverse_path(path):
     reversed_path = []
@@ -198,22 +206,28 @@ def reverse_path(path):
         reversed_path.append(oppo)
 
 
-
+# ... continuation of MAIN CODE
 # Loop until the map we build is as long as the given groom graph
 #while len(graph) < len(room_graph):
+for i in range(6):
+    print(f"$$$$$$$$$$$$$$$$$$$$$$$$$${i}$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+
+    start_room = player.current_room
+
     # travel til room has no unexplored exits
-traversal_path = depth_first_traverse_from(start_room)
-print(f"your are here! {player.current_room.id}")
-print(traversal_path)
+    traversal_path = depth_first_traverse_from(start_room)
+    print(f"your are here! {player.current_room.id}")
+    print(traversal_path)
     # do breadth-fs for nearest unexplored exit with graph already filled out only
-from_starting_room = player.current_room
+    from_starting_room = player.current_room
     # reversed_path = reverse_path(traversal_path)
-    # back_path = bfs(from_starting_room)
-    # traversal_path.append(back_path)
-    # travel_back(back_path)
-
-
-
+    back_path = bfs(from_starting_room)
+    # MIGHT need to take the initial path item out of back_path bc it will be the starting room
+    # you'd do this by using "remove" from the 0th position
+    print(f"@@@@@@@@@@@@@@@@backpath is: {back_path}@@@@@@@@@@@@@@@@@@@@@")
+    traversal_path.append(back_path)
+    print(f"@@@@@@@@@@@@@@@@TOTALpath is now: {traversal_path}@@@@@@@@@@@@@@@@@@@@@")
+    travel_back(back_path)
     # Travel to unexplored exit room
 
 
