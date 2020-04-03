@@ -244,10 +244,9 @@ def backtrack_player_thru_this(list_of_rooms):
 
 # ... continuation of MAIN CODE
 # Loop until the map we build is as long as the given groom graph
-#while len(graph) < len(room_graph):
-for i in range(5):
+while len(graph) < len(room_graph):
 
-    print(f"\n$$$$$$$$$$$$$$$$$$$$$$$$$$  {i}  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n")
+    print(f"\n$$$$$$$$$$$$$$$$$$$$$$$$$$  GOOD LUCK  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n")
 
     starting_room = player.current_room
 
