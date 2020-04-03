@@ -63,7 +63,8 @@ def graph_the_exits(room, previous_room=None, entryway=None):
 
         # don't overwrite it if there's already a room assigned...
         elif room.id in graph and exit in graph[room.id] and graph[room.id][exit] != '?':
-            unexplored_exits[exit] = graph[room.id][exit]
+            # I tried to add the line below, to correct the problem of the missing directions in room 0 and room 1, but I just got ANOTHER error in line 228 by doing it.
+            # unexplored_exits[exit] = graph[room.id][exit]
             print("pass: don't overwrite the goodness")
         else:
             unexplored_exits[exit] = '?'
