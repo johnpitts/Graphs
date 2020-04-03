@@ -19,7 +19,7 @@ world = World()
 # map_file = "maps/test_cross.txt"
 # map_file = "maps/test_loop.txt"
 map_file = "maps/test_loop_fork.txt"
-# map_file = "maps/main_maze.txt"
+#n map_file = "maps/main_maze.txt"
 
 # Loads the map into a dictionary
 room_graph=literal_eval(open(map_file, "r").read())
@@ -27,6 +27,7 @@ world.load_graph(room_graph)
 
 # Print an ASCII map
 world.print_rooms()
+print(f" world grid size= {len(world.rooms)}")
 
 player = Player(world.starting_room)
 
@@ -50,7 +51,7 @@ def opposite_direction_from(this_direction):
 
 
 def graph_the_exits(room, previous_room=None, entryway=None):
-    # graph the entryway into the previous room
+    # graph the entryway, as the exit door to the previous room
     if previous_room is not None:
         last_door = opposite_direction_from(entryway)
         graph[previous_room.id][last_door] = room.id
@@ -64,7 +65,7 @@ def graph_the_exits(room, previous_room=None, entryway=None):
         # don't overwrite it if there's already a room assigned...
         elif room.id in graph and exit in graph[room.id] and graph[room.id][exit] != '?':
             # I tried to add the line below, to correct the problem of the missing directions in room 0 and room 1, but I just got ANOTHER error in line 228 by doing it.
-            # unexplored_exits[exit] = graph[room.id][exit]
+            unexplored_exits[exit] = graph[room.id][exit]
             print("pass: don't overwrite the goodness")
         else:
             unexplored_exits[exit] = '?'
