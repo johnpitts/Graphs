@@ -16,9 +16,9 @@ world = World()
 
 # You may uncomment the smaller graphs for development and testing purposes.
 # map_file = "maps/test_line.txt"
-map_file = "maps/test_cross.txt"
+# map_file = "maps/test_cross.txt"
 # map_file = "maps/test_loop.txt"
-# map_file = "maps/test_loop_fork.txt"
+map_file = "maps/test_loop_fork.txt"
 # map_file = "maps/main_maze.txt"
 
 # Loads the map into a dictionary
@@ -60,6 +60,11 @@ def graph_the_exits(room, previous_room=None, entryway=None):
         # the only time the graph is updated is when player has walked thru a door and can connect a past room to current room
         if exit is entryway:
             unexplored_exits[exit] = previous_room.id
+
+        # don't overwrite it if there's already a room assigned...
+        elif room.id in graph and exit in graph[room.id] and graph[room.id][exit] != '?':
+            unexplored_exits[exit] = graph[room.id][exit]
+            print("pass: don't overwrite the goodness")
         else:
             unexplored_exits[exit] = '?'
 
@@ -69,6 +74,7 @@ def graph_the_exits(room, previous_room=None, entryway=None):
 def the_last_room(room, entryway=None):
     if entryway is None: # you're in the starting room
         return False
+
     exits = room.get_exits()
     for exit in exits:
         # exclude the entry-door
@@ -83,9 +89,9 @@ def the_last_room(room, entryway=None):
     print("last room")
     return True
 
-def depth_first_traverse_from(starting_room):
+def depth_first_traversal():
 
-    print(starting_room)
+    print(f"starting_room for dft: {starting_room}")
 
     # step 1: create a stack
     s = Stack()
@@ -103,9 +109,12 @@ def depth_first_traverse_from(starting_room):
     # Now go thru with graph
     direction = "just one room"
     entryway = None
-    while s.size() > 0:
+    room = None
+    while s.size() > 0: # and next_room not starting_room:
         # pop the current room
+        # previous_room = room
         room = s.pop()
+        print(f"\nroom popped: {room}")
         # check if the current room is the end of the graph
         if not the_last_room(room, entryway):
             # Get the next direction to travel from any door which is unknown... '?'
@@ -124,16 +133,17 @@ def depth_first_traverse_from(starting_room):
             entryway = opposite_direction_from(direction) # tested, works
             # get newest room and graph the entryway door
             next_room = player.current_room
-            print(next_room)
-            graph_the_exits(next_room, room, entryway)
+            # check to see if you've looped to the same room as you started, and if so, don't graph the exits bc ow it'll reset your doorways to ?
 
+            graph_the_exits(next_room, room, entryway)
+            
             print(f"newly updated room graph: {graph} ")
 
             # push current room into the stack
             s.push(next_room)
         else:
             print("RETURNING from dft: ----------------------->")
-            return
+            
 
 def theres_an_unexplored_exit_in_this(room):
     exits = room.get_exits()
@@ -233,15 +243,15 @@ def backtrack_player_thru_this(list_of_rooms):
 # ... continuation of MAIN CODE
 # Loop until the map we build is as long as the given groom graph
 #while len(graph) < len(room_graph):
-for i in range(4):
+for i in range(5):
 
-    print(f"$$$$$$$$$$$$$$$$$$$$$$$$$${i}$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+    print(f"\n$$$$$$$$$$$$$$$$$$$$$$$$$$  {i}  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n")
 
-    start_room = player.current_room
+    starting_room = player.current_room
 
     # travel til room has no unexplored exits
 
-    depth_first_traverse_from(start_room)
+    depth_first_traversal()
     print(f"your are here! {player.current_room.id}")
     print(traversal_path)
     # do breadth-fs for nearest unexplored exit with graph already filled out only
